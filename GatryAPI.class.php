@@ -68,10 +68,12 @@ class Promocoes
 
 		echo "{";
 
-		for ($i=0; $i < count($this->ids); $i++) {
-		//for ($i=8; $i > 0 ; $i--) { 
-			echo "\"".$this->ids[$i]."\":{";
+		echo "\"results\":[\n";
 
+		for ($i=0; $i < count($this->ids); $i++) {
+
+			echo "\n{\n";
+			Promocoes::echoJson("id",$this->ids[$i]);
 			Promocoes::echoJson("name",$this->names[$i]);
 			Promocoes::echoJson("price",$this->prices[$i]);
 			Promocoes::echoJson("image",$this->images[$i]);
@@ -84,12 +86,35 @@ class Promocoes
 			Promocoes::echoJson("date",$this->dates[$i]);
 			Promocoes::echoJson("moreinfo",$this->moreinfos[$i], true);
 
-			if ($i == count($this->ids)) {
+			if ($i == count($this->ids)-1) {
 				echo "}";
 			}else{
 				echo "},";
 			}
 		}
+		echo "],";
+
+		// for ($i=0; $i < count($this->ids); $i++) {
+		// 	echo "\"".$this->ids[$i]."\":{";
+
+		// 	Promocoes::echoJson("name",$this->names[$i]);
+		// 	Promocoes::echoJson("price",$this->prices[$i]);
+		// 	Promocoes::echoJson("image",$this->images[$i]);
+		// 	Promocoes::echoJson("link",$this->links[$i]);
+		// 	Promocoes::echoJson("userLink",$this->userLinks[$i]);
+		// 	Promocoes::echoJson("userImage",$this->userImages[$i]);
+		// 	Promocoes::echoJson("store",$this->stores[$i]);
+		// 	Promocoes::echoJson("likes",$this->likes[$i]);
+		// 	Promocoes::echoJson("comments",$this->comments[$i]);
+		// 	Promocoes::echoJson("date",$this->dates[$i]);
+		// 	Promocoes::echoJson("moreinfo",$this->moreinfos[$i], true);
+
+		// 	if ($i == count($this->ids)) {
+		// 		echo "}";
+		// 	}else{
+		// 		echo "},";
+		// 	}
+		// }
 			
 			echo "\"Author\":\"www.andremorais.com.br\"";
 		echo "}";		
@@ -98,9 +123,9 @@ class Promocoes
 	public function echoJson($key, $value, $isLastTag = false){
 		
 		if($isLastTag){
-			echo "\"".$key."\":\"".Promocoes::removeSpecialCharacters($value)."\"";
+			echo "\"".$key."\":\"".Promocoes::removeSpecialCharacters($value)."\"\n";
 		}else{
-			echo "\"".$key."\":\"".Promocoes::removeSpecialCharacters($value)."\",";
+			echo "\"".$key."\":\"".Promocoes::removeSpecialCharacters($value)."\",\n";
 		}
 
 	}
