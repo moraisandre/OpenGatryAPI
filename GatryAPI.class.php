@@ -71,7 +71,7 @@ class Promocoes
 		return $array;		
 	}
 
-	public function getPromo()
+	public function printJson()
 	{
 		//header('Content-type:application/json; charset=ISO-8859-1');
 		header('Content-type:application/json; charset=UTF-8');
@@ -108,13 +108,13 @@ class Promocoes
 		echo "}";		
 	}
 
-	public function getMorePromo($newQtde)
+	public function getPromo($newQtde = 0)
 	{
 		$this->qtde = $newQtde;
 
 		$this->collectPromoData();
 
-		$this->getPromo();
+		$this->printJson();
 	}
 
 	public function echoJson($key, $value, $isLastTag = false){
