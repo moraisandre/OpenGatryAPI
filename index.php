@@ -4,7 +4,13 @@ include_once "GatryAPI.class.php";
 
 $promo = new Gatry\Promocoes;
 
-$promo->getJson();
+if ($_GET['loadMorePromo'] == "true"){
+	$promo->getMorePromo($_GET['qtde']);
+}else{
+	$promo->getPromo();
+}
+
+
 
 //echo "END";
 
