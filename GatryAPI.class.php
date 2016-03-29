@@ -6,11 +6,15 @@ namespace Gatry;
  * @package Gatry
 */
 
-class Promocoes
+//GatryAPI Class ------------------------------------------------------------------------------------------------
+
+class GatryAPI
 {
 	public $link;
+	public $linkClean;
 	public $qtde;
 	public $html;
+	public $type;
 
 	//Arrays
 	public $ids;
@@ -28,15 +32,39 @@ class Promocoes
 
 	public function __construct()
 	{
-		$this->qtde = 0;
+		//$this->qtde = 0;
 
-		$this->collectPromoData();
+		//$this->collectData();
 
 	}
-	public function collectPromoData()
+
+	public function getInfo($onlyPromocao = true, $newQtde = 0)
 	{
-		$this->link = "https://gatry.com/home/mais_promocoes/?qtde=".$this->qtde."&onlyPromocao=true";//"http://gatry.com";
+		$this->qtde = $newQtde;
+
+		if ($onlyPromocao == "true") {
+			$this->type = "Promocao";
+		}else{
+			$this->type = "Commentários";
+		}
+
 		
+		
+		$this->collectData($onlyPromocao);
+
+		$this->printJson();
+	}
+
+	public function collectData($onlyPromocao)
+	{
+		if ($onlyPromocao == "true"){
+			$this->link = "https://gatry.com/home/mais_promocoes/?qtde=".$this->qtde."&onlyPromocao=true";	
+		}else{
+			$this->link = "https://gatry.com/home/mais_promocoes/?qtde=".$this->qtde;
+		}
+		
+		$this->linkClean = "http://gatry.com";
+
 		$this->html = file_get_contents($this->link);
 
 		$this->ids = $this->populateArrayFromParse($this->html, '/<article id="promocao-([\w\W]*?)itemtype="http:\/\/schema.org\/Product">/', '/id="promocao-([^<]*)" class/'); //Id
@@ -62,7 +90,7 @@ class Promocoes
 		
 		for ($i=0; $i < count($htmlDivsArray); $i++) {
 			if($addLink){
-				$array[$i] = $this->link.trim(Parser::parse($htmlDivsArray[$i][0],$pattern2));
+				$array[$i] = $this->linkClean.trim(Parser::parse($htmlDivsArray[$i][0],$pattern2));
 			}else{
 				$array[$i] = trim(Parser::parse($htmlDivsArray[$i][0],$pattern2));
 			}
@@ -77,24 +105,24 @@ class Promocoes
 		header('Content-type:application/json; charset=UTF-8');
 
 		echo "{";
-
+		echo "\"type\":\"".$this->type."\",";
 		echo "\"results\":[\n";
 
 		for ($i=0; $i < count($this->ids); $i++) {
 
 			echo "\n{\n";
-			Promocoes::echoJson("id",$this->ids[$i]);
-			Promocoes::echoJson("name",$this->names[$i]);
-			Promocoes::echoJson("price",$this->prices[$i]);
-			Promocoes::echoJson("image",$this->images[$i]);
-			Promocoes::echoJson("link",$this->links[$i]);
-			Promocoes::echoJson("userLink",$this->userLinks[$i]);
-			Promocoes::echoJson("userImage",$this->userImages[$i]);
-			Promocoes::echoJson("store",$this->stores[$i]);
-			Promocoes::echoJson("likes",$this->likes[$i]);
-			Promocoes::echoJson("comments",$this->comments[$i]);
-			Promocoes::echoJson("date",$this->dates[$i]);
-			Promocoes::echoJson("moreinfo",$this->moreinfos[$i], true);
+			GatryAPI::echoJson("id",$this->ids[$i]);
+			GatryAPI::echoJson("name",$this->names[$i]);
+			GatryAPI::echoJson("price",$this->prices[$i]);
+			GatryAPI::echoJson("image",$this->images[$i]);
+			GatryAPI::echoJson("link",$this->links[$i]);
+			GatryAPI::echoJson("userLink",$this->userLinks[$i]);
+			GatryAPI::echoJson("userImage",$this->userImages[$i]);
+			GatryAPI::echoJson("store",$this->stores[$i]);
+			GatryAPI::echoJson("likes",$this->likes[$i]);
+			GatryAPI::echoJson("comments",$this->comments[$i]);
+			GatryAPI::echoJson("date",$this->dates[$i]);
+			GatryAPI::echoJson("moreinfo",$this->moreinfos[$i], true);
 
 			if ($i == count($this->ids)-1) {
 				echo "}";
@@ -108,21 +136,12 @@ class Promocoes
 		echo "}";		
 	}
 
-	public function getPromo($newQtde = 0)
-	{
-		$this->qtde = $newQtde;
-
-		$this->collectPromoData();
-
-		$this->printJson();
-	}
-
 	public function echoJson($key, $value, $isLastTag = false){
 		
 		if($isLastTag){
-			echo "\"".$key."\":\"".Promocoes::removeSpecialCharacters($value)."\"\n";
+			echo "\"".$key."\":\"".GatryAPI::removeSpecialCharacters($value)."\"\n";
 		}else{
-			echo "\"".$key."\":\"".Promocoes::removeSpecialCharacters($value)."\",\n";
+			echo "\"".$key."\":\"".GatryAPI::removeSpecialCharacters($value)."\",\n";
 		}
 
 	}
@@ -134,6 +153,8 @@ class Promocoes
 	}
 
 }
+
+//Parser Class --------------------------------------------------------------------------------------------------
 
 class Parser {
 	public static function parse($source, $pattern, $all = false) {
