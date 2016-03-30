@@ -38,7 +38,7 @@ class GatryAPI
 
 	}
 
-	public function getInfo($onlyPromocao = true, $newQtde = 0)
+	public function getInfo($onlyPromocao = "true", $newQtde = 0)
 	{
 		$this->qtde = $newQtde;
 
@@ -78,12 +78,19 @@ class GatryAPI
 		$this->likes = $this->populateArrayFromParse($this->html, '/\+ <span([\w\W]*?)<\/span>/', '/>([^<]*)</'); //Likes
 		$this->comments = $this->populateArrayFromParse($this->html, '/#comentarios([\w\W]*?)>([\w\W]*?)<span>Comentários<\/span>/', '/>([^<]*)</'); //Comments
 		$this->dates = $this->populateArrayFromParse($this->html, '/data_postado([\w\W]*?)<\/span>/', '/>([^<]*)</'); //Post Date
-		$this->moreinfos = $this->populateArrayFromParse($this->html, '/[0-9]<\/span><\/a><a ([\w\W]*?)mais hidden-xs/', '/<a[^>]* href="([^"]*)"/', true); //More info
+		
+		if ($onlyPromocao == "true"){
+			$this->moreinfos = $this->populateArrayFromParse($this->html, '/[0-9]<\/span><\/a><a ([\w\W]*?)mais hidden-xs/', '/<a[^>]* href="([^"]*)"/', true); //More info
+		}else{
+			$this->moreinfos = $this->populateArrayFromParse($this->html, '/<article id="promocao-([\w\W]*?)itemtype="http:\/\/schema.org\/Product">/', '/id="promocao-([^<]*)" class/', false, false); //More info
+		}
+
+		
 
 		//print_r($this->ids);
 	}
 
-	public function populateArrayFromParse($html, $pattern1, $pattern2, $addLink = false)
+	public function populateArrayFromParse($html, $pattern1, $pattern2, $addLink = false, $onlyPromocao = true)
 	{
 		
 		$htmlDivsArray = Parser::parse($html, $pattern1, true);
@@ -91,6 +98,8 @@ class GatryAPI
 		for ($i=0; $i < count($htmlDivsArray); $i++) {
 			if($addLink){
 				$array[$i] = $this->linkClean.trim(Parser::parse($htmlDivsArray[$i][0],$pattern2));
+			}else if(!$onlyPromocao){
+				$array[$i] = "https://gatry.com/promocao/detalhes/".trim(Parser::parse($htmlDivsArray[$i][0],$pattern2));
 			}else{
 				$array[$i] = trim(Parser::parse($htmlDivsArray[$i][0],$pattern2));
 			}
