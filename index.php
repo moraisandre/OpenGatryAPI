@@ -2,17 +2,17 @@
 
 include_once "GatryAPI.class.php";
 
-$promo = new Gatry\GatryAPI;
+$gatry = new Gatry\GatryAPI;
 
 
 if(isset($_GET['qtde']) && isset($_GET['onlyPromocao'])) {
-	$promo->getInfo($_GET['onlyPromocao'], $_GET['qtde']);
+	$gatry->getInfo($_GET['onlyPromocao'], $_GET['qtde']);
 }else if (isset($_GET['qtde'])) {
-	$promo->getInfo("false", $_GET['qtde']);
+	$gatry->getInfo("false", $_GET['qtde']);
 }else if (isset($_GET['onlyPromocao'])) {
-	$promo->getInfo($_GET['onlyPromocao']);
+	$gatry->getInfo($_GET['onlyPromocao']);
 }else{
-	$promo->getInfo();
+	$gatry->getInfo();
 }
 
 ?>

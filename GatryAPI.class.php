@@ -45,7 +45,7 @@ class GatryAPI
 		if ($onlyPromocao == "true") {
 			$this->type = "Promocao";
 		}else{
-			$this->type = "Commentários";
+			$this->type = "Comentario";
 		}
 
 		
